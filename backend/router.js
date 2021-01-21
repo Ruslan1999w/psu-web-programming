@@ -20,22 +20,23 @@ router.post('/test', function(req, res) {
    console.log('req.body', req.body);
 });
 router.post('/login', function (req, res) {
-    req.session.message= 'Hello world';
     Users.findOne({
         login: req.body.login
         },
         (err, user) => {
             if (err) {
                 console.log('err', err);
-            } else {
-                if (user == null) {
-                    res.json('USER DOE`S NOT EXIST');
-                }
-                if (req.body.password === user.password) {
-                    res.json({status: 'OK'});
+                res.sendStatus(400);
+            } else if (user) {
+                if (user.password === req.body.password) {
+                    console.log(req.session);
+                    res.sendStatus(200)
                 } else {
-                    res.json({status: 'BAD PASSWORD'});
+                    res.sendStatus(404)
                 }
+            } else {
+                console.log('Пользователя не существует');
+                res.sendStatus(400);
             }
         })
 });

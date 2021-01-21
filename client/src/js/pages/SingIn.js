@@ -32,12 +32,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function SignIn({history}) {
+export default function SignIn(props) {
     const classes = useStyles();
     const [password, setPassword] = React.useState();
     const [login, setLogin] = React.useState();
+    const {history} = props;
 
     const sendAuthorizeData = () => {
+        // debugger
         fetch('/login', {
             method: 'POST',
             headers: {
@@ -49,7 +51,10 @@ export default function SignIn({history}) {
             })
         })
             .then(response => response.json())
-            .then(result => console.log(result));
+            .then(result => {
+                console.log('result', result);
+
+            });
     }
 
     return (
