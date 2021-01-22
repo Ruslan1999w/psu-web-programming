@@ -39,7 +39,7 @@ export default function SignIn(props) {
     const {history} = props;
 
     const sendAuthorizeData = () => {
-        // debugger
+        console.log('result');
         fetch('/login', {
             method: 'POST',
             headers: {
@@ -50,10 +50,10 @@ export default function SignIn(props) {
                 login: login
             })
         })
-            .then(response => response.json())
-            .then(result => {
-                console.log('result', result);
-
+            .then(response => {
+                if (response.status === 200) {
+                    history.push('/');
+                }
             });
     }
 

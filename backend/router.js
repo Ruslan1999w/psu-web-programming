@@ -13,12 +13,21 @@ router.use(function timeLog(req, res, next) {
 });
 
 router.get('/', function(req, res) {
-    res.send('Birds home page');
+    console.log('зашел');
+    if(req.session.auth) {
+        console.log('authorized');
+    }
 });
 
-router.post('/test', function(req, res) {
-   console.log('req.body', req.body);
-});
+router.get('/authInfo', (req, res) => {
+    console.log('authIngo');
+    if (req.session.auth) {
+        res.status(200).json({auth: true});
+    } else {
+        res.status(400);
+    }
+})
+
 router.post('/login', function (req, res) {
     Users.findOne({
         login: req.body.login
@@ -29,7 +38,7 @@ router.post('/login', function (req, res) {
                 res.sendStatus(400);
             } else if (user) {
                 if (user.password === req.body.password) {
-                    console.log(req.session);
+                    req.session.auth = true;
                     res.sendStatus(200)
                 } else {
                     res.sendStatus(404)
@@ -41,16 +50,39 @@ router.post('/login', function (req, res) {
         })
 });
 
-router.get('/register', function (req, res) {
-    const {username, password} = req.body;
-    console.log(username, password);
+router.post('/register', function (req, res) {
+    console.log('register data', req.body);
+    Users.findOne({
+            login: req.body.login
+        },
+        (err, user) => {
+            if (err) {
+                console.log('err', err);
+                res.sendStatus(500);
+            } else if (user) {
+                console.log('Пользователь уже существует');
+                res.sendStatus(400);
+            } else {
+                req.session.auth = true;
+                const userModel = new Users ({
+                    login: req.body.login,
+                    password: req.body.password,
+                    username: req.body.first_name,
+                })
+                userModel.save((err, doc) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log('пользователь успешно создан');
+                        console.log(doc);
+                    }
+                });
+                res.sendStatus(201);
+
+            }
+        })
 });
 module.exports = router;
 
-// const userModel = new User ({
-//     login: 'test',
-//     password: 'test',
-//     username: 'admin'
-// })
-// userModel.save();
+
 

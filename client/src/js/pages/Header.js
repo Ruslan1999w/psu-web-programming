@@ -1,13 +1,29 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import {  Link } from "react-router-dom";
 
-class Header extends React.Component {
-  render() {
+export default function Header(){
+  const [isAuth, setIsAuth] = useState(false);
+
+  useEffect(() => {
+    console.log('отправляю про');
+    fetch('/authInfo', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+      },
+    })
+        .then(response => response.json())
+        .then(response => {
+          if (response.auth) {
+            setIsAuth(true);
+          } else {
+            setIsAuth(false);
+          }
+        });
+  })
     return (
       <div class="header">
         <div class="container">
-          <img src="../../img/logo.png" alt="Logo" />
 
           <ul>
             <li>
@@ -29,12 +45,19 @@ class Header extends React.Component {
             </li>
           </ul>
 
-          <Link to="/login">
-            <input type="button" value="Log in" />
-          </Link>
+          {isAuth ? (
+              <Link to="/login">
+                <input type="button" value="Log in" />
+              </Link>
+          ) : (
+            <Link to="/">
+              <input type="button" value="Log out" />
+            </Link>
+            )
+
+          }
+
         </div>
       </div>
     );
-  }
 }
-export default Header;

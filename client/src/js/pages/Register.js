@@ -11,11 +11,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import {Link} from "react-router-dom";
-import {
-    MuiPickersUtilsProvider,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import { Modal, Space } from 'antd';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -37,25 +33,27 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function RegisterForm() {
+export default function RegisterForm(data) {
   const classes = useStyles();
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [successModalVisibility, setSuccesModalVisibility] = useState(false);
   const [age, setAge] = useState('');
-
+  const {history} = data;
+  console.log(history);
   const sendAuthorizeData = (event) => {
-
     const user = {
-      email: email,
+      login: email,
       password: password,
       first_name: firstName,
       last_name: lastName,
       userAge: age,
     };
 
-    const response = fetch('/auth', {
+
+    fetch('/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -63,19 +61,22 @@ export default function RegisterForm() {
       body: JSON.stringify(user),
     })
       .then((response) => {
-        if (response.ok) {
-          console.log(response);
-        } else alert('try again ', response.status);
+        if (response.status === 201) {
+            console.log('response.status', response.status)
+            // setSuccesModalVisibility(true);
+            history.push('/')
+        } else alert('Пользователь уже существует', response.status);
         return response.json();
-      })
-      .then((data) => {
-        setUser(data.token);
       });
-    if (response.ok)
-      alert(`${this.state.login}, добро пожаловать! ` + response);
   }
+    function success() {
+        Modal.success({
+            content: 'Вы успешно зарегестрировались',
+        });
+    }
 
     return (
+        <div>
         <Container component="main" maxWidth="xs">
             <CssBaseline />
             <div className={classes.paper}>
@@ -144,19 +145,6 @@ export default function RegisterForm() {
                     }
                     }
                 />
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardDatePicker
-                    margin="normal"
-                    id="date-picker-dialog"
-                    label="Дата рождения"
-                    format="MM/dd/yyyy"
-                    value={age}
-                    onChange={setAge}
-                    KeyboardButtonProps={{
-                        'aria-label': 'change date',
-                    }}
-                />
-                </MuiPickersUtilsProvider>
                 <Button
                     type="submit"
                     fullWidth
@@ -165,7 +153,7 @@ export default function RegisterForm() {
                     className={classes.submit}
                     onClick={() => sendAuthorizeData()}
                 >
-                    Sign In
+                    Register now
                 </Button>
                 <Grid container>
                     <Grid item xs></Grid>
@@ -177,5 +165,6 @@ export default function RegisterForm() {
                 </Grid>
             </div>
         </Container>
+        </div>
     )
 }

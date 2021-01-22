@@ -15,7 +15,7 @@ class Articles_list extends React.Component {
   }
 
   componentDidMount() {
-    fetch("/articles")
+    fetch("/")
       .then((response) => {
         return response.json();
       })
