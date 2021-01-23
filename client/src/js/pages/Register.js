@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import './comp_style/loginform.scss';
-import {setUser} from "../actions/UserActions";
+import {setUser} from "../actions/userActions";
 import {makeStyles} from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -12,6 +12,8 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import {Link} from "react-router-dom";
 import { Modal, Space } from 'antd';
+import {useDispatch, useSelector} from "react-redux";
+import { register } from "../actions/userActions";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -41,8 +43,13 @@ export default function RegisterForm(data) {
   const [email, setEmail] = useState('');
   const [successModalVisibility, setSuccesModalVisibility] = useState(false);
   const [age, setAge] = useState('');
-  const {history} = data;
-  console.log(history);
+  const { history } = data;
+  const dispatch = useDispatch();
+  const isAuth = useSelector(state => state.user.userData);
+  if (isAuth) {
+        history.push('/');
+  }
+
   const sendAuthorizeData = (event) => {
     const user = {
       login: email,
@@ -51,23 +58,8 @@ export default function RegisterForm(data) {
       last_name: lastName,
       userAge: age,
     };
+      dispatch(register(user));
 
-
-    fetch('/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-      body: JSON.stringify(user),
-    })
-      .then((response) => {
-        if (response.status === 201) {
-            console.log('response.status', response.status)
-            // setSuccesModalVisibility(true);
-            history.push('/')
-        } else alert('Пользователь уже существует', response.status);
-        return response.json();
-      });
   }
     function success() {
         Modal.success({

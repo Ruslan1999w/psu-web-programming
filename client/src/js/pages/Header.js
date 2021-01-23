@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import {  Link } from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import { logout, getUser } from "../actions/userActions";
 
 export default function Header(){
   const [isAuth, setIsAuth] = useState(false);
-
+  const user = useSelector(state => state?.user?.userData?.login);
+  const dispatch = useDispatch();
+  console.log('user', user);
   useEffect(() => {
-    console.log('отправляю про');
-    fetch('/authInfo', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-    })
-        .then(response => response.json())
-        .then(response => {
-          if (response.auth) {
-            setIsAuth(true);
-          } else {
-            setIsAuth(false);
-          }
-        });
+    dispatch(getUser());
+    if (user !== undefined) {
+      console.log('isAuth');
+      setIsAuth(true);
+    } else {
+      console.log('not auth')
+      setIsAuth(false);
+    }
   })
+
+
+
     return (
       <div class="header">
         <div class="container">
@@ -37,22 +37,25 @@ export default function Header(){
                 <Link to="/about">About us</Link>
               </a>
             </li>
+            {isAuth &&
 
-            <li>
+              <li>
               <a>
-                <Link to="/profile">Profile</Link>
+              <Link to="/profile">Profile</Link>
               </a>
-            </li>
+              </li>
+            }
           </ul>
 
           {isAuth ? (
+                  <Link to="/" onClick={() => dispatch(logout())}>
+                    <input type="button" value="Log out" />
+                  </Link>
+
+          ) : (
               <Link to="/login">
                 <input type="button" value="Log in" />
               </Link>
-          ) : (
-            <Link to="/">
-              <input type="button" value="Log out" />
-            </Link>
             )
 
           }

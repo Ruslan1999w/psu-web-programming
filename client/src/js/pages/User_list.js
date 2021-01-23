@@ -1,43 +1,34 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React, {useEffect} from "react";
 import User_retrieve from "./User_retrieve";
 import { Route, BrowserRouter, Link } from "react-router-dom";
+import {getAllUsers} from "../actions/userActions";
+import {useDispatch, useSelector} from "react-redux";
+import './comp_style/user_list.scss';
 
-class User_list extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  state = {
-    error: false,
-    isLoading: false,
-    items: [],
-  };
-  componentDidMount() {
-    fetch("http://127.0.0.1:8000/users/users_list/")
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        this.setState({ isLoading: true, items: data });
-        console.log(this);
-      });
-  }
-  render() {
-    const { isLoaded, items } = this.state;
+export default  function User_list() {
+    const userList = useSelector(state => state?.user?.userList);
+    const dispatch = useDispatch();
+    console.log(userList);
+    useEffect(() => {
+        console.log('dispatch getAllUsers');
+        dispatch(getAllUsers());
+    }, [dispatch]);
+
     return (
       <div class="wrapper">
-        {items.map((item) => (
           <div class="user_list">
-            <div class="user">
-              <Link to={`/users/${item.id}`}>{item.username}</Link>
-              {item.date_joined}
-              <h1>{item.id}</h1>
-            </div>
+              {userList &&
+                  userList.map((user) => {
+                      return(
+                      <div className="user">
+                          <Link to={`/users/${user.userId}`}> User Login: {user.login}</Link>
+                          <p>password: {user.password} </p>
+                      </div>
+                      )
+                  })
+              })
+              }
           </div>
-        ))}
       </div>
     );
-  }
-}
-
-export default User_list;
+};

@@ -5,7 +5,6 @@ import { createBrowserHistory } from 'history';
 import { Provider } from 'react-redux';
 
 import Header from './js/pages/Header';
-import Footer from './js/pages/Footer';
 import Articles_list from './js/pages/Articles_list';
 import Articles_retrieve from './js/pages/Articles_retrieve';
 import User_list from './js/pages/User_list';
@@ -15,7 +14,7 @@ import SignIn from './js/pages/SingIn';
 import CreatePost from './js/pages/CreatePost';
 import RegisterForm from './js/pages/Register';
 import AboutUs from './js/pages/AboutUs';
-import { store } from './js/store/store';
+import store from './js/store/store';
 import './css/main.scss';
 
 const history = createBrowserHistory();
@@ -50,6 +49,7 @@ const Main = () => (
     <Route path="/login" component={SignIn} />
     <Route path="/registration" component={RegisterForm} />
     <Route path="/about" component={AboutUs} />
+    <Route path="/users" component={All_user} />
   </Switch>
 );
 

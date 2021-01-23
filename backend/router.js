@@ -1,10 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const Users = require('./models/User');
+const Books = require('./models/Books')
 const passport = require('passport');
 
 const initializePassport = require('./passport-config');
 initializePassport(passport);
+
+async function getAllUsers() {
+    const userList = await Users.find({},  function (err, docs) {
+        if (err) {
+            console.log(err);
+        } else {
+            return docs;
+        }
+    })
+    console.log(userList);
+    return userList;
+}
+
 
 router.use(function timeLog(req, res, next) {
     const date = new Date();
@@ -20,9 +34,9 @@ router.get('/', function(req, res) {
 });
 
 router.get('/authInfo', (req, res) => {
-    console.log('authIngo');
+    console.log('authInfo');
     if (req.session.auth) {
-        res.status(200).json({auth: true});
+        res.json(req.session.user);
     } else {
         res.status(400);
     }
@@ -39,7 +53,8 @@ router.post('/login', function (req, res) {
             } else if (user) {
                 if (user.password === req.body.password) {
                     req.session.auth = true;
-                    res.sendStatus(200)
+                    req.session.user = user;
+                    res.json(user);
                 } else {
                     res.sendStatus(404)
                 }
@@ -49,6 +64,12 @@ router.post('/login', function (req, res) {
             }
         })
 });
+
+router.post('/logout', function (req, res) {
+    console.log('logout');
+    req.session.auth = false;
+    res.sendStatus(200);
+})
 
 router.post('/register', function (req, res) {
     console.log('register data', req.body);
@@ -69,6 +90,7 @@ router.post('/register', function (req, res) {
                     password: req.body.password,
                     username: req.body.first_name,
                 })
+                req.session.user = userModel;
                 userModel.save((err, doc) => {
                     if (err) {
                         console.log(err);
@@ -82,6 +104,24 @@ router.post('/register', function (req, res) {
             }
         })
 });
+
+router.get('/catalog/book/', function (req, res) {
+    console.log('req.session.user', req.session.user);
+    res.json({book: 'book', author: 'author'});
+})
+
+router.post('/catalog/book/', function (req, res) {
+    console.log('POST /catalog/book');
+    res.sendStatus(201);
+})
+
+router.get('/user-list', function (req, res) {
+    getAllUsers().then((list) => {
+        console.log('promisse returned\n', list);
+        res.json(list);
+    })
+})
+
 module.exports = router;
 
 

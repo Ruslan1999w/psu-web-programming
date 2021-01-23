@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { setUser } from '../actions/UserActions';
+import { setUser } from '../actions/userActions';
 import './comp_style/loginform.scss';
 import { Link } from 'react-router-dom';
 

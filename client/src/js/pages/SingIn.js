@@ -8,9 +8,11 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import {useDispatch, useSelector} from "react-redux";
 import {
     Link
 } from "react-router-dom";
+import { login as Auth } from '../actions/userActions';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -36,26 +38,13 @@ export default function SignIn(props) {
     const classes = useStyles();
     const [password, setPassword] = React.useState();
     const [login, setLogin] = React.useState();
-    const {history} = props;
-
-    const sendAuthorizeData = () => {
-        console.log('result');
-        fetch('/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                password: password,
-                login: login
-            })
-        })
-            .then(response => {
-                if (response.status === 200) {
-                    history.push('/');
-                }
-            });
+    const { history } = props;
+    const dispatch = useDispatch();
+    const isAuth = useSelector(state => state.user.userData);
+    if (isAuth) {
+        history.push('/');
     }
+
 
     return (
         <Container component="main" maxWidth="xs">
@@ -103,7 +92,7 @@ export default function SignIn(props) {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        onClick={() => sendAuthorizeData()}
+                        onClick={() => dispatch(Auth({login, password}))}
                     >
                         Sign In
                     </Button>

@@ -1,59 +1,18 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Link } from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {bookList} from "../actions/bookActions";
 
-class Articles_list extends React.Component {
-  state = {
-    items: [],
-  };
+export default function Articles_list(props) {
+  const dispatch = useDispatch();
 
-  main_image(item, flag) {
-    if (flag === "image") {
-      return item.images[0].path_to_image;
-    } else {
-      return item.post_creator[0].id_auth_user.username;
-    }
-  }
+  useEffect(() => {
+      dispatch(bookList());
+  })
 
-  componentDidMount() {
-    fetch("/")
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        this.setState({ items: data });
-      });
-  }
-  render() {
-    const { items } = this.state;
-    return (
-      <div class="wrapper">
-        <div class="title">
-          <div class="title-wrap">
-            <h1>End of the week, but our site steel in production...</h1>
-          </div>
-        </div>
-        <div class="main">
-          <div class="container">
-            {items.map((item) => (
-              <div class="article">
-                <div class="left">
-                  <Link to={`/articles/${item.id_post}`}>
-                    <img src={this.main_image(item, "image")}></img>
-                  </Link>
-                </div>
-                <div class="media">
-                  <h1>
-                    <Link to={`/articles/${item.id_post}`}>{item.title}</Link>
-                  </h1>
-                  <p> {item.description}</p>
-                  <h2> {this.main_image(item, "author")}</h2>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+  return(
+      <div>
+        <h1>Aticle List</h1>
       </div>
-    );
-  }
+  )
 }
-export default Articles_list;
