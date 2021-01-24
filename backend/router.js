@@ -15,8 +15,17 @@ async function getAllUsers() {
             return docs;
         }
     })
-    console.log(userList);
     return userList;
+}
+async function getAllBooks() {
+    const bookList = await Books.find({},  function (err, docs) {
+        if (err) {
+            console.log(err);
+        } else {
+            return docs;
+        }
+    })
+    return bookList;
 }
 
 
@@ -106,8 +115,14 @@ router.post('/register', function (req, res) {
 });
 
 router.get('/catalog/book/', function (req, res) {
-    console.log('req.session.user', req.session.user);
-    res.json({book: 'book', author: 'author'});
+    getAllBooks().then((list) => {
+        res.json(list);
+    })
+})
+
+router.get('/catalog/book/:id', function (req, res) {
+    console.log('/catalog/book/:id\n', req.params.id);
+
 })
 
 router.post('/catalog/book/', function (req, res) {
@@ -116,6 +131,7 @@ router.post('/catalog/book/', function (req, res) {
 })
 
 router.get('/user-list', function (req, res) {
+
     getAllUsers().then((list) => {
         console.log('promisse returned\n', list);
         res.json(list);

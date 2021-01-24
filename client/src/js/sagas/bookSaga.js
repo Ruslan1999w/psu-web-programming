@@ -5,7 +5,7 @@ import {putBookList} from "../actions/bookActions";
 export function* loadBooks() {
     console.log('load_books');
     const response = yield axios.get('/catalog/book/');
-    console.log(response);
+    console.log(response.data);
     yield put(putBookList(response.data));
 }
 
